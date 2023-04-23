@@ -48,9 +48,8 @@ File.init(
 		},
 	},
 	{
-		// Other model options go here
-		sequelize: connection, // We need to pass the connection instance
-		modelName: "File", // We need to choose the model name
+		sequelize: connection,
+		modelName: "File",
 	}
 );
 
