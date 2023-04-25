@@ -22,9 +22,9 @@ app.get("/", (erq, res) => {
 	res.send({ ok: true });
 });
 
-app.listen(process.env.SERVER_PORT, () => {
+app.listen(process.env.SERVER_PORT || 3030, () => {
 	logger.info(
 		"MAIN",
-		"Server listening on http://localhost:" + process.env.SERVER_PORT
+		"Server listening on http://localhost:" + (process.env.SERVER_PORT || 3030)
 	);
 });
