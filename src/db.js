@@ -74,6 +74,13 @@ File.init(
 							record.dataValues.updatedAt
 						).getTime();
 					});
+				} else {
+					records.dataValues.updatedAt = new Date(
+						records.dataValues.updatedAt
+					).getTime();
+					records.dataValues.createdAt = new Date(
+						records.dataValues.updatedAt
+					).getTime();
 				}
 			},
 		},
@@ -149,6 +156,13 @@ MetaData.init(
 							record.dataValues.updatedAt
 						).getTime();
 					});
+				} else {
+					records.dataValues.updatedAt = new Date(
+						records.dataValues.updatedAt
+					).getTime();
+					records.dataValues.createdAt = new Date(
+						records.dataValues.updatedAt
+					).getTime();
 				}
 			},
 		},
