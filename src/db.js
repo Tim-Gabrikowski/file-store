@@ -65,6 +65,8 @@ File.init(
 				record.dataValues.updatedAt = Date.now();
 			},
 			afterFind: (records, options) => {
+				if (records === undefined || records === null) return;
+
 				if (records instanceof Array) {
 					records.forEach((record) => {
 						record.dataValues.updatedAt = new Date(
@@ -147,6 +149,8 @@ MetaData.init(
 				record.dataValues.updatedAt = Date.now();
 			},
 			afterFind: (records, options) => {
+				if (records === undefined || records === null) return;
+
 				if (records instanceof Array) {
 					records.forEach((record) => {
 						record.dataValues.updatedAt = new Date(
