@@ -56,6 +56,27 @@ File.init(
 	{
 		sequelize: connection,
 		modelName: "File",
+		hooks: {
+			beforeCreate: (record, options) => {
+				record.dataValues.createdAt = Date.now();
+				record.dataValues.updatedAt = Date.now();
+			},
+			beforeUpdate: (record, options) => {
+				record.dataValues.updatedAt = Date.now();
+			},
+			afterFind: (records, options) => {
+				if (records instanceof Array) {
+					records.forEach((record) => {
+						record.dataValues.updatedAt = new Date(
+							record.dataValues.updatedAt
+						).getTime();
+						record.dataValues.createdAt = new Date(
+							record.dataValues.updatedAt
+						).getTime();
+					});
+				}
+			},
+		},
 	}
 );
 
@@ -110,6 +131,27 @@ MetaData.init(
 	{
 		sequelize: connection,
 		tableName: "MetaData",
+		hooks: {
+			beforeCreate: (record, options) => {
+				record.dataValues.createdAt = Date.now();
+				record.dataValues.updatedAt = Date.now();
+			},
+			beforeUpdate: (record, options) => {
+				record.dataValues.updatedAt = Date.now();
+			},
+			afterFind: (records, options) => {
+				if (records instanceof Array) {
+					records.forEach((record) => {
+						record.dataValues.updatedAt = new Date(
+							record.dataValues.updatedAt
+						).getTime();
+						record.dataValues.createdAt = new Date(
+							record.dataValues.updatedAt
+						).getTime();
+					});
+				}
+			},
+		},
 	}
 );
 
