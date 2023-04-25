@@ -75,6 +75,17 @@ File.init(
 						record.dataValues.createdAt = new Date(
 							record.dataValues.updatedAt
 						).getTime();
+
+						if (record.dataValues.MetaData) {
+							record.dataValues.MetaData.forEach((md) => {
+								md.dataValues.createdAt = new Date(
+									md.dataValues.createdAt
+								).getTime();
+								md.dataValues.updatedAt = new Date(
+									md.dataValues.updatedAt
+								).getTime();
+							});
+						}
 					});
 				} else {
 					records.dataValues.updatedAt = new Date(
@@ -83,6 +94,17 @@ File.init(
 					records.dataValues.createdAt = new Date(
 						records.dataValues.updatedAt
 					).getTime();
+
+					if (records.dataValues.MetaData) {
+						records.dataValues.MetaData.forEach((md) => {
+							md.dataValues.createdAt = new Date(
+								md.dataValues.createdAt
+							).getTime();
+							md.dataValues.updatedAt = new Date(
+								md.dataValues.updatedAt
+							).getTime();
+						});
+					}
 				}
 			},
 		},
