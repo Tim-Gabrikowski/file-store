@@ -8,6 +8,7 @@ import * as logger from "./logger.js";
 
 //routers
 import { filesRouter } from "./routes/files.js";
+import { tagsRouter } from "./routes/tags.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors());
 
 // use routers
 app.use("/files", filesRouter);
+app.use("/tags", tagsRouter);
 
 app.get("/", (erq, res) => {
 	res.send({ ok: true });
