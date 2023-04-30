@@ -14,6 +14,8 @@ dotenv.config();
 
 const app = Express();
 
+app.use(Express.json());
+
 app.use(cors());
 
 // use routers

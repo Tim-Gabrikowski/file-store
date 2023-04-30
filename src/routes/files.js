@@ -72,6 +72,59 @@ router.post("/upload", async (req, res) => {
 		res.send({ ok: false, error: err });
 	}
 });
+router.put("/add-tag", async (req, res) => {
+	const fileId = req.body.fileId;
+	const tagName = req.body.tagName;
+
+	let tagToAdd = await Tag.findOne({ where: { name: tagName } });
+
+	let fileToAddTagTo = await File.findByPk(fileId);
+
+	fileToAddTagTo.addTag(tagToAdd);
+
+	res.send({ ok: true });
+});
+router.put("/remove-tag", async (req, res) => {
+	const fileId = req.body.fileId;
+	const tagName = req.body.tagName;
+
+	let tagToRemove = await Tag.findOne({ where: { name: tagName } });
+
+	let fileToRemoveTagFrom = await File.findByPk(fileId);
+
+	fileToRemoveTagFrom.removeTag(tagToRemove);
+
+	res.send({ ok: true });
+});
+
+router.put("/add-meta", async (req, res) => {
+	const fileId = req.body.fileId;
+	const metaKey = req.body.key;
+	const metaValue = req.body.value;
+
+	let MetaDatas = await MetaData.findAll({
+		where: { key: metaKey, FileId: fileId },
+	});
+	if (MetaDatas.length != 0) {
+		await MetaDatas[0].set("value", metaValue).save();
+		return res.send(MetaDatas[0]);
+	}
+	let metaData = await MetaData.build({
+		key: metaKey,
+		value: metaValue,
+		FileId: fileId,
+	}).save();
+
+	res.send(metaData);
+});
+router.put("/remove-meta", async (req, res) => {
+	const fileId = req.body.fileId;
+	const metaKey = req.body.key;
+
+	await MetaData.destroy({ where: { FileId: fileId, key: metaKey } });
+
+	res.send({ ok: true });
+});
 
 router.delete("/delete/:fid", async (req, res) => {
 	if (req.params.fid === undefined)
