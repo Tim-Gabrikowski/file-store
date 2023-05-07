@@ -3,6 +3,7 @@ import { File, MetaData, Tag } from "../db.js";
 import fileUpload from "express-fileupload";
 import path from "path";
 import * as logger from "../logger.js";
+import * as mime from "mime-types";
 
 const router = Router();
 
@@ -45,7 +46,7 @@ router.post("/upload", async (req, res) => {
 		let file = req.files.file;
 		let originalName = file.name;
 		let fileHash = await hash(file.data);
-		let fileType = file.mimetype;
+		let fileType = mime.lookup(originalName);
 
 		let savePath = path.join("files", fileHash);
 
