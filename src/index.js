@@ -10,6 +10,7 @@ import * as logger from "./logger.js";
 import { filesRouter } from "./routes/files.js";
 import { tagsRouter } from "./routes/tags.js";
 import { searchRouter } from "./routes/search.js";
+import { downloadRouter } from "./routes/download.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(cors());
 app.use("/files", filesRouter);
 app.use("/tags", tagsRouter);
 app.use("/search", searchRouter);
+app.use("/download", downloadRouter);
 
 app.get("/", (erq, res) => {
 	res.send({ ok: true });
