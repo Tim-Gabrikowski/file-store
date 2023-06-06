@@ -137,9 +137,20 @@ Tag.init(
 	}
 );
 
+class FileTags extends Model {}
+
+FileTags.init(
+	{},
+	{
+		modelName: "FileTags",
+		sequelize: connection,
+		timestamps: false,
+	}
+);
+
 // File - Tag - Relationship
-File.belongsToMany(Tag, { through: "FileTags" });
-Tag.belongsToMany(File, { through: "FileTags" });
+File.belongsToMany(Tag, { through: FileTags });
+Tag.belongsToMany(File, { through: FileTags });
 
 export class MetaData extends Model {}
 

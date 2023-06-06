@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { File, Tag, MetaData } from "../db.js";
-import * as logger from "../logger.js";
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import * as _ from "underscore";
 import * as mime from "mime-types";
+import { authMiddleware } from "../middlewares/auth.js";
 
 const router = Router();
 
-router.get("", async (req, res) => {
+router.get("", authMiddleware, async (req, res) => {
 	let searchAttr = req.body;
 	// search operator ("and" or "or")
 	let operator = searchAttr.operator;
@@ -156,6 +156,33 @@ router.get("", async (req, res) => {
 		checks: checksPerformed,
 		operator: operator,
 	});
+});
+
+router.get("/by-tags", authMiddleware, async (req, res) => {
+	if (!Array.isArray(req.body.tags))
+		return res
+			.status(400)
+			.send({ ok: false, error: "no tags array specified" });
+
+	let filesbt = [];
+	for (let tag of req.body.tags) {
+		let dbTag;
+
+		// get Tag by Id or by name (what is specified?)
+		if (typeof tag == "number") {
+			dbTag = await Tag.findByPk(tag);
+		} else if (typeof tag == "string") {
+			dbTag = await Tag.findOne({ where: { name: tag } });
+		} else {
+			break;
+		}
+		// get all files from the tag
+		filesbt = await dbTag.getFiles({
+			include: [{ model: Tag, through: "FileTags" }],
+		});
+	}
+
+	res.send(_.intersection(filesbt));
 });
 
 export const searchRouter = router;

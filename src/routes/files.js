@@ -4,6 +4,7 @@ import fileUpload from "express-fileupload";
 import path from "path";
 import * as logger from "../logger.js";
 import * as mime from "mime-types";
+import { authMiddleware } from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -19,15 +20,15 @@ router.use(
 	})
 );
 
-router.get("", (req, res) => {
+router.get("", authMiddleware, (req, res) => {
 	res.send({ ok: true });
 });
 
-router.get("/list", async (req, res) => {
-	let files = await File.findAll();
+router.get("/list", authMiddleware, async (req, res) => {
+	let files = await File.findAll({ include: [Tag] });
 	res.send(files);
 });
-router.get("/one/:fid", async (req, res) => {
+router.get("/one/:fid", authMiddleware, async (req, res) => {
 	if (req.params.fid === undefined)
 		return res.status(401).send({ ok: false, error: "no fileid" });
 
@@ -39,9 +40,10 @@ router.get("/one/:fid", async (req, res) => {
 	res.send(file);
 });
 
-router.post("/upload", async (req, res) => {
+router.post("/upload", authMiddleware, async (req, res) => {
 	try {
-		if (!req.files) return res.send({ ok: false, error: "no files" });
+		if (!req.files)
+			return res.status(400).send({ ok: false, error: "no files" });
 
 		let file = req.files.file;
 		let originalName = file.name;
@@ -73,19 +75,21 @@ router.post("/upload", async (req, res) => {
 		res.send({ ok: false, error: err });
 	}
 });
-router.put("/add-tag", async (req, res) => {
+router.put("/add-tag", authMiddleware, async (req, res) => {
 	const fileId = req.body.fileId;
 	const tagName = req.body.tagName;
 
-	let tagToAdd = await Tag.findOne({ where: { name: tagName } });
+	let tagToAdd = await Tag.findOne({
+		where: { name: tagName },
+	});
 
-	let fileToAddTagTo = await File.findByPk(fileId);
+	let fileToAddTagTo = await File.findByPk(fileId, { include: [Tag] });
 
 	fileToAddTagTo.addTag(tagToAdd);
 
-	res.send({ ok: true });
+	res.send({ ok: true, file: fileToAddTagTo });
 });
-router.put("/remove-tag", async (req, res) => {
+router.put("/remove-tag", authMiddleware, async (req, res) => {
 	const fileId = req.body.fileId;
 	const tagName = req.body.tagName;
 
@@ -98,7 +102,7 @@ router.put("/remove-tag", async (req, res) => {
 	res.send({ ok: true });
 });
 
-router.put("/add-meta", async (req, res) => {
+router.put("/add-meta", authMiddleware, async (req, res) => {
 	const fileId = req.body.fileId;
 	const metaKey = req.body.key;
 	const metaValue = req.body.value;
@@ -118,7 +122,7 @@ router.put("/add-meta", async (req, res) => {
 
 	res.send(metaData);
 });
-router.put("/remove-meta", async (req, res) => {
+router.put("/remove-meta", authMiddleware, async (req, res) => {
 	const fileId = req.body.fileId;
 	const metaKey = req.body.key;
 
@@ -127,9 +131,9 @@ router.put("/remove-meta", async (req, res) => {
 	res.send({ ok: true });
 });
 
-router.delete("/delete/:fid", async (req, res) => {
+router.delete("/delete/:fid", authMiddleware, async (req, res) => {
 	if (req.params.fid === undefined)
-		return res.status(401).send({ ok: false, error: "no fileid" });
+		return res.status(400).send({ ok: false, error: "no fileid" });
 
 	let fileid = req.params.fid;
 
