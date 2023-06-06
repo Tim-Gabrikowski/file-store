@@ -2,6 +2,7 @@ import Express from "express";
 import cors from "cors";
 // environment vars
 import dotenv from "dotenv";
+dotenv.config();
 // import DB-Module to init db connection
 import "./db.js";
 import * as logger from "./logger.js";
@@ -11,8 +12,7 @@ import { filesRouter } from "./routes/files.js";
 import { tagsRouter } from "./routes/tags.js";
 import { searchRouter } from "./routes/search.js";
 import { downloadRouter } from "./routes/download.js";
-
-dotenv.config();
+import { authRouter } from "./routes/auth.js";
 
 const app = Express();
 
@@ -25,6 +25,7 @@ app.use("/files", filesRouter);
 app.use("/tags", tagsRouter);
 app.use("/search", searchRouter);
 app.use("/download", downloadRouter);
+app.use("/auth", authRouter);
 
 app.get("/", (erq, res) => {
 	res.send({ ok: true });

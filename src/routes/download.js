@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { File, Tag, MetaData } from "../db.js";
-import * as _ from "underscore";
 import * as fs from "fs";
 
 const router = Router();

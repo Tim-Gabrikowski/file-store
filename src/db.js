@@ -210,4 +210,29 @@ MetaData.init(
 File.hasMany(MetaData);
 MetaData.belongsTo(File);
 
+export class Token extends Model {}
+
+Token.init(
+	{
+		id: {
+			type: DataTypes.INTEGER,
+			autoIncrement: true,
+			primaryKey: true,
+		},
+		type: {
+			type: DataTypes.STRING,
+		},
+		token: {
+			type: DataTypes.STRING,
+		},
+		name: {
+			type: DataTypes.STRING,
+		},
+		uuid: {
+			type: DataTypes.STRING,
+		},
+	},
+	{ sequelize: connection, timestamps: false, tableName: "Tokens" }
+);
+
 connection.sync({ alter: true });
