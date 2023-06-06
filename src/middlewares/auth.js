@@ -1,4 +1,3 @@
-import * as logger from "../logger.js";
 import { decrypt, verify } from "../tools/decryption.js";
 import { Token } from "../db.js";
 
@@ -24,6 +23,7 @@ export async function authMiddleware(req, res, next) {
 	}
 	if (result.valid && result.user) {
 		req.user = result.user;
+		req.user.tokenType = tokenType;
 		next();
 	} else {
 		res.status(401).send({ token: true, valid: false });

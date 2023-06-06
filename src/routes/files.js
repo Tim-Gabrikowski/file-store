@@ -59,6 +59,7 @@ router.post("/upload", authMiddleware, async (req, res) => {
 			path: savePath,
 			hash: fileHash,
 			size: file.size,
+			owner: req.user.tokenType + ":" + req.user.uuid,
 		}).save();
 
 		let metaDataFileType = await MetaData.build({

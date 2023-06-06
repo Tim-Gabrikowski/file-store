@@ -52,6 +52,11 @@ File.init(
 			type: DataTypes.BIGINT,
 			allowNull: true,
 		},
+		owner: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			defaultValue: "internal",
+		},
 	},
 	{
 		sequelize: connection,
