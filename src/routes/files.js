@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { File, MetaData, Tag } from "../db.js";
-import fileUpload from "express-fileupload";
 import path from "path";
 import * as logger from "../logger.js";
 import * as mime from "mime-types";
 import { authMiddleware } from "../middlewares/auth.js";
+import multer from "multer";
+import fs from "fs";
 
 const router = Router();
 
@@ -13,12 +14,6 @@ import { createHash } from "crypto";
 function hash(input) {
 	return createHash("sha256").update(input).digest("hex");
 }
-
-router.use(
-	fileUpload({
-		createParentPath: true,
-	})
-);
 
 router.get("", authMiddleware, (req, res) => {
 	res.send({ ok: true });
@@ -40,42 +35,48 @@ router.get("/one/:fid", authMiddleware, async (req, res) => {
 	res.send(file);
 });
 
-router.post("/upload", authMiddleware, async (req, res) => {
-	try {
-		if (!req.files)
-			return res.status(400).send({ ok: false, error: "no files" });
+const upload = multer({ storage: multer.memoryStorage() });
+router.post(
+	"/upload",
+	upload.single("file"),
+	authMiddleware,
+	async (req, res) => {
+		try {
+			if (!req.file)
+				return res.status(400).send({ ok: false, error: "no files" });
 
-		let file = req.files.file;
-		let originalName = file.name;
-		let fileHash = await hash(file.data);
-		let fileType = mime.lookup(originalName);
+			let file = req.file;
+			let originalName = file.originalname;
+			let fileHash = await hash(file.buffer);
+			let fileType = mime.lookup(originalName);
 
-		let savePath = path.join("files", fileHash);
+			let savePath = path.join("files", fileHash);
 
-		file.mv(savePath);
+			fs.writeFileSync(savePath, file.buffer);
 
-		let fileData = await File.build({
-			name: originalName,
-			path: savePath,
-			hash: fileHash,
-			size: file.size,
-			owner: req.user.tokenType + ":" + req.user.uuid,
-		}).save();
+			let fileData = await File.build({
+				name: originalName,
+				path: savePath,
+				hash: fileHash,
+				size: file.size,
+				owner: req.user.tokenType + ":" + req.user.uuid,
+			}).save();
 
-		let metaDataFileType = await MetaData.build({
-			key: "mimeType",
-			value: fileType,
-			FileId: fileData.id,
-		}).save();
+			let metaDataFileType = await MetaData.build({
+				key: "mimeType",
+				value: fileType,
+				FileId: fileData.id,
+			}).save();
 
-		fileData.dataValues.MetaData = [metaDataFileType];
+			fileData.dataValues.MetaData = [metaDataFileType];
 
-		res.send({ ok: true, file: fileData });
-	} catch (err) {
-		logger.error("FILEUPLOAD", err);
-		res.send({ ok: false, error: err });
+			res.send({ ok: true, file: fileData });
+		} catch (err) {
+			logger.error("FILEUPLOAD", err);
+			res.send({ ok: false, error: err });
+		}
 	}
-});
+);
 router.put("/add-tag", authMiddleware, async (req, res) => {
 	const fileId = req.body.fileId;
 	const tagName = req.body.tagName;
