@@ -54,7 +54,7 @@ function validateGID(token) {
 }
 async function validateLocalToken(token) {
 	let tkn = await Token.findOne({ where: { token: token } });
-	if (tkn.dataValues !== null) {
+	if (tkn !== null) {
 		return { valid: true, user: tkn.dataValues };
 	} else {
 		return { valid: false, user: null };
