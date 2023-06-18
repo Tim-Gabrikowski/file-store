@@ -5,7 +5,10 @@
 	"type": "module",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon src/index.js --debug"
+		"dev": "nodemon src/index.js --debug",
+		"start": "node src/index.js",
+		"docker-build": "docker build -t registry.gitlab.com/timgabhh/docker/file-store:latest .",
+		"docker-push": "docker push registry.gitlab.com/timgabhh/docker/file-store:latest"
 	},
 	"keywords": [],
 	"author": "",

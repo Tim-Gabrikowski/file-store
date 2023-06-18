@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  service:
+    image: registry.gitlab.com/timgabhh/docker/file-store:latest
+    ports:
+      - "3030:3030"
+    volumes:
+      - "./keys:/app/keys"
+      - "./files:/app/files"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=host.docker.internal
