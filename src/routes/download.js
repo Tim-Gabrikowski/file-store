@@ -10,6 +10,8 @@ router.get("/:id", async (req, res) => {
 	let file = await File.findByPk(id);
 	if (!file) return res.sendStatus(404);
 
+	file.increment("downloaded", { by: 1 });
+
 	const filepath = file.dataValues.path;
 	res.download(filepath, file.name);
 });
@@ -19,6 +21,8 @@ router.get("/stream/:id", async (req, res) => {
 
 	let file = await File.findByPk(id);
 	if (!file) return res.sendStatus(404);
+
+	file.increment("streamed", { by: 1 });
 
 	let mimeTypeMeta = await MetaData.findOne({
 		where: {
