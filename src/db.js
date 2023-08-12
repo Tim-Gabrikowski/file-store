@@ -1,6 +1,7 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
+import { Sequelize, Model, DataTypes, Op } from "sequelize";
 import * as logger from "./logger.js";
 import dotenv from "dotenv";
+import { randomBytes } from "crypto";
 dotenv.config();
 
 const connection = new Sequelize(
@@ -35,6 +36,11 @@ File.init(
 			type: DataTypes.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
+		},
+		key: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			unique: "fileKey_Unique",
 		},
 		name: {
 			type: DataTypes.STRING,
@@ -249,5 +255,27 @@ Token.init(
 	},
 	{ sequelize: connection, timestamps: false, tableName: "Tokens" }
 );
+
+logger.info("DATABASE", "Checking all files for Keys");
+
+let filesWoKey = await File.findAll({
+	where: {
+		key: {
+			[Op.is]: null,
+		},
+	},
+});
+
+logger.info("DATABASE", filesWoKey.length + " Files without keys");
+
+for (let f = 0; f < filesWoKey.length; f++) {
+	const file = filesWoKey[f];
+	file.key = randomBytes(12).toString("base64url");
+	await file.save();
+	logger.info(
+		"DATABASE",
+		"File " + file.dataValues.id + " has now the Key: " + file.dataValues.key
+	);
+}
 
 connection.sync({ alter: true });
