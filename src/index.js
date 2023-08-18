@@ -38,3 +38,7 @@ app.listen(process.env.SERVER_PORT || 3030, () => {
 		"Server listening on http://localhost:" + (process.env.SERVER_PORT || 3030)
 	);
 });
+
+process.on("uncaughtException", (error) => {
+	logger.critical("MAIN", error);
+});

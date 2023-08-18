@@ -256,6 +256,12 @@ Token.init(
 	{ sequelize: connection, timestamps: false, tableName: "Tokens" }
 );
 
+logger.info("DATABASE", "Syncing DB");
+
+await connection.sync({ alter: true });
+
+logger.info("DATABASE", "SYNC DONE");
+
 logger.info("DATABASE", "Checking all files for Keys");
 
 let filesWoKey = await File.findAll({
@@ -277,5 +283,3 @@ for (let f = 0; f < filesWoKey.length; f++) {
 		"File " + file.dataValues.id + " has now the Key: " + file.dataValues.key
 	);
 }
-
-connection.sync({ alter: true });
