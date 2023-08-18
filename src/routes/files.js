@@ -3,6 +3,7 @@ import { File, MetaData, Tag } from "../db.js";
 import path from "path";
 import * as logger from "../logger.js";
 import * as mime from "mime-types";
+import { randomBytes } from "crypto";
 import { authMiddleware } from "../middlewares/auth.js";
 import multer from "multer";
 import fs from "fs";
@@ -56,6 +57,7 @@ router.post(
 
 			let fileData = await File.build({
 				name: originalName,
+				key: randomBytes(12).toString("base64url"),
 				path: savePath,
 				hash: fileHash,
 				size: file.size,
